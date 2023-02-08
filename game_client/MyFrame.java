@@ -2,73 +2,121 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class MyFrame extends JFrame implements ActionListener
+public class MyFrame extends JFrame implements ActionListener, KeyListener
 {
     private MyPanel mp;
-    private JPanel titlePanel, singleGamePanel, multiGamePanel, cardPanel;
-    private CardLayout cardLayout;
-    private JButton single, multi;
+    private MyModel mm;
+    private GameManager gm;
+    private MediaTracker mt;
+    private Timer timer;
+    private int timeBuff;
 
     public MyFrame()
     {
-        //---------------前処理-----------------
-        this.mp = new MyPanel();
+        //----------------初期化----------------
+        this.mt = new MediaTracker(this);
+        this.mm = new MyModel();
+        this.gm = this.mm.getGameManager();
+        this.timer = new Timer(10, this);
+        this.timeBuff = 0;
         //--------------------------------------
 
-        //---------------title------------------
-        this.titlePanel = new JPanel();
-        this.single = new JButton("1人でプレイ");
-        this.multi = new JButton("2人でプレイ");
-        this.single.addActionListener(this);
-        this.multi.addActionListener(this);
-        this.titlePanel.add(this.single);
-        this.titlePanel.add(this.multi);
+        //----------------image-----------------
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        Image[] blocks = new Image[8];
+
+        for(int i = 0; i < 8; i++)
+        {
+            blocks[i] = tk.getImage("./images/image" + i + ".png");
+            this.mt.addImage(blocks[i], i);
+        }
+
+        try
+        {
+            this.mt.waitForAll();
+        }
+        catch(Exception e){}
         //--------------------------------------
 
-        //-------------singleGame---------------
-        this.singleGamePanel = new JPanel();
-        JLabel hoge = new JLabel("hoge");
-        this.singleGamePanel.add(hoge);
-        //--------------------------------------
-
-        //--------------multiGame---------------
-        this.multiGamePanel = new JPanel();
-        JLabel huga = new JLabel("huga");
-        this.multiGamePanel.add(huga);
-        //--------------------------------------
-
-        //--------------cardPanel---------------
-        this.cardPanel = new JPanel();
-        this.cardLayout = new CardLayout();
-        this.cardPanel.setLayout(this.cardLayout);
-        this.cardPanel.add(this.titlePanel);
-        this.cardPanel.add(this.singleGamePanel, "single");
-        this.cardPanel.add(this.multiGamePanel, "multi");
-        //--------------------------------------
-
-        //----------------全体------------------
+        //----------------Panel-----------------
+        this.mp = new MyPanel(this, this.mm, blocks);
         JPanel panel = new JPanel();
-        //panel.add(this.mp);
-        super.getContentPane().add(this.cardPanel);
+        panel.add(this.mp);
+        super.getContentPane().add(panel);
+        //--------------------------------------
+
+        //----------------timer-----------------
+        this.timer.start();
         //--------------------------------------
     }
 
+    //timerで呼ばれる部分
     public void actionPerformed(ActionEvent e)
     {
-        if(e.getSource() == this.single)
+        System.out.println("timer");
+        this.timeBuff += 1;
+        this.mp.repaint();
+        switch(this.mm.getSceneNum())
         {
-            this.cardLayout.show(cardPanel, "single");
-        }
-        if(e.getSource() == this.multi)
-        {
-            this.cardLayout.show(cardPanel, "multi");
+            case 1:
+                System.out.println(this.gm.getIsFall());
+                if(!this.gm.getIsFall())
+                {
+                    this.gm.game();
+                }
+                else if(this.timeBuff > 100)
+                {
+                    this.timeBuff = 0;
+                    this.gm.fallMino();
+                }
+                break;
+
         }
     }
+
+    //-----------------キー入力系-----------------------
+    public void keyTyped(KeyEvent e){}
+    public void keyPressed(KeyEvent e)
+    {
+        switch(e.getKeyCode())
+        {
+            case KeyEvent.VK_W:
+                this.mm.pushedW();
+                System.out.println("w");
+                break;
+            case KeyEvent.VK_A:
+                this.mm.pushedA();
+                System.out.println("a");
+                break;
+            case KeyEvent.VK_S:
+                this.mm.pushedS();
+                System.out.println("s");
+                break;
+            case KeyEvent.VK_D:
+                this.mm.pushedD();
+                System.out.println("d");
+                break;
+            case KeyEvent.VK_Q:
+                this.mm.pushedQ();
+                System.out.println("q");
+                break;
+            case KeyEvent.VK_E:
+                this.mm.pushedE();
+                System.out.println("e");
+                break;
+            case KeyEvent.VK_SPACE:
+                this.mm.pushedSpace();
+                System.out.println("space");
+                break;
+        }
+    }
+    public void keyReleased(KeyEvent e){}
+    //--------------------------------------------------
 
     public static void main(String[] args)
     {
         MyFrame frame = new MyFrame();
-        frame.setSize(640,480);
+        frame.setSize(frame.mm.WIDTH, frame.mm.HEIGHT);
         frame.setLocation(100,100);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);

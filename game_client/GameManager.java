@@ -1,3 +1,4 @@
+import java.util.Random;
 public class GameManager
 {
     private int[][] baseFeilds; //確定したfeild
@@ -8,6 +9,7 @@ public class GameManager
     private int[] minoRange;    //minoの範囲
     private int[][] minoBuff;   //TetMinoクラスから受け取ったminoの情報
     private boolean isFall; //0:静止, 1:落下中
+    private Random rando;
 
     public GameManager()
     {
@@ -16,13 +18,13 @@ public class GameManager
         //出現位置
         this.charX = 4;
         this.charY = 1;
+        this.rando = new Random();
     }
 
     //------------------入力系-------------------
     public void fallMino()
     {
-        int range = this.mino.minoRange()[2];
-        if(range + this.charY < 19 && this.check(0,1))
+        if(this.mino.minoRange()[2] + this.charY < 19 && this.check(0,1))
         {
             this.charY += 1;
             this.putMino();
@@ -53,14 +55,80 @@ public class GameManager
     
     public void rRotateMino()
     {
-        this.mino.rRotateMino();
-        this.putMino();
+        if(this.mino.getMinoType() != 1 || this.charY < 17)
+        {
+            try
+            {
+                this.mino.rRotateMino();
+                if(!onCheck())
+                {
+                    this.mino.lRotateMino();
+                }
+                this.putMino();
+            }
+            catch(ArrayIndexOutOfBoundsException e)
+            {
+                if(this.charX > 5)
+                {
+                    this.charX -= 1;
+                }
+                else
+                {
+                    this.charX += 1;
+                }
+                if(this.mino.getMinoType() == 1)
+                {
+                    if(this.charX > 5)
+                    {
+                        this.charX -= 1;
+                    }
+                    else
+                    {
+                        this.charX += 1;
+                    }
+                }
+                this.putMino();
+            }
+        }
     }
 
     public void lRotateMino()
     {
-        this.mino.lRotateMino();
-        this.putMino();
+        if(this.mino.getMinoType() != 1 || this.charY < 17)
+        {
+            try
+            {
+                this.mino.lRotateMino();
+                if(!onCheck())
+                {
+                    this.mino.rRotateMino();
+                }
+                this.putMino();
+            }
+            catch(ArrayIndexOutOfBoundsException e)
+            {
+                if(this.charX > 5)
+                {
+                    this.charX -= 1;
+                }
+                else
+                {
+                    this.charX += 1;
+                }
+                if(this.mino.getMinoType() == 1)
+                {
+                    if(this.charX > 5)
+                    {
+                        this.charX -= 1;
+                    }
+                    else
+                    {
+                        this.charX += 1;
+                    }
+                }
+                this.putMino();
+            }
+        }
     }
     //-------------------------------------------
 
@@ -94,7 +162,7 @@ public class GameManager
         this.charX = 4;
         this.charY = 1;
         //処理
-        this.mino = new TetMino(2);
+        this.mino = new TetMino(this.rando.nextInt(6) + 1);
         this.minoRange = this.mino.minoRange();
         this.putMino();
     }
@@ -147,6 +215,18 @@ public class GameManager
         for(int i = 0; i < 4; i++)
         {
             checkSum += baseFeilds[checkMino[i][1] + checkY][checkMino[i][0] + checkX];
+        }
+        if(checkSum == 0)return true;
+        else return false;
+    }
+
+    public boolean onCheck()
+    {
+        int[][] checkMino = this.mino.getMino();
+        int checkSum = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            checkSum += baseFeilds[checkMino[i][1] + this.charY][checkMino[i][0] + this.charX];
         }
         if(checkSum == 0)return true;
         else return false;

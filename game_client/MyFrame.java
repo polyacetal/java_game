@@ -53,13 +53,11 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
     //timerで呼ばれる部分
     public void actionPerformed(ActionEvent e)
     {
-        System.out.println("timer");
         this.timeBuff += 1;
         this.mp.repaint();
         switch(this.mm.getSceneNum())
         {
             case 1:
-                System.out.println(this.gm.getIsFall());
                 if(!this.gm.getIsFall())
                 {
                     this.gm.game();

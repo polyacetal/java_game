@@ -108,7 +108,6 @@ public class TetMino
             rotatedMino[i][0] = -y;
             rotatedMino[i][1] = x;
         }
-        System.out.println("rRotate-----------------------------------------------");
         this.mino = rotatedMino;
     }
 

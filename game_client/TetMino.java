@@ -36,7 +36,7 @@ public class TetMino
     public void setIMino()
     {
         this.mino = new int[][] {
-            {-1,0},{0,0},{1,0},{2,0}
+            {-2,0},{-1,0},{0,0},{1,0}
         };
     }
 

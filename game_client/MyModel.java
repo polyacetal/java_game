@@ -1,7 +1,7 @@
 public class MyModel
 {
-    public final int WIDTH = 1280; //1280,640
-    public final int HEIGHT = 960; //960, 480
+    public final int WIDTH = 960; //1280,640
+    public final int HEIGHT = 540; //960, 480
     private int sceneNum;   //0:title, 1:singleGame, 2:multiGame, 3:pause, 4:result
     private int charPosition;
     private GameManager gm;

@@ -16,7 +16,7 @@ public class GameManager
         this.baseFeilds = new int[20][10];
         this.feilds = new int[20][10];
         //出現位置
-        this.charX = 4;
+        this.charX = 5;
         this.charY = 1;
         this.rando = new Random();
     }
@@ -55,7 +55,7 @@ public class GameManager
     
     public void rRotateMino()
     {
-        if(this.mino.getMinoType() != 1 || this.charY < 17)
+        if(this.charY < 19 || (this.mino.getMinoType() == 1 && this.charY < 10))
         {
             try
             {
@@ -94,7 +94,7 @@ public class GameManager
 
     public void lRotateMino()
     {
-        if(this.mino.getMinoType() != 1 || this.charY < 17)
+        if(this.charY < 19 || (this.mino.getMinoType() == 1 && this.charY < 10))
         {
             try
             {
@@ -159,7 +159,7 @@ public class GameManager
     {
         //初期化
         this.isFall = true;
-        this.charX = 4;
+        this.charX = 5;
         this.charY = 1;
         //処理
         this.mino = new TetMino(this.rando.nextInt(6) + 1);

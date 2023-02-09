@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+//import java.net.*;
 
 public class MyFrame extends JFrame implements ActionListener, KeyListener
 {
@@ -24,6 +25,10 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         //----------------image-----------------
         Toolkit tk = Toolkit.getDefaultToolkit();
         Image[] blocks = new Image[8];
+        /*
+        URL url = this.getClass().getResource(画像ファイル名);
+        chara = tk.getImage(url);
+        */
 
         for(int i = 0; i < 8; i++)
         {

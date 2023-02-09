@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-//import java.net.*;
+import java.net.*;
 
 public class MyFrame extends JFrame implements ActionListener, KeyListener
 {
@@ -17,7 +17,6 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         //----------------初期化----------------
         this.mt = new MediaTracker(this);
         this.mm = new MyModel();
-        this.gm = this.mm.getGameManager();
         this.timer = new Timer(10, this);
         this.timeBuff = 0;
         //--------------------------------------
@@ -25,15 +24,20 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         //----------------image-----------------
         Toolkit tk = Toolkit.getDefaultToolkit();
         Image[] blocks = new Image[8];
-        /*
-        URL url = this.getClass().getResource(画像ファイル名);
-        chara = tk.getImage(url);
-        */
+        Image[] minos = new Image[8];
 
         for(int i = 0; i < 8; i++)
         {
-            blocks[i] = tk.getImage("./images/image" + i + ".png");
+            URL url = this.getClass().getResource("block" + i + ".png");
+            blocks[i] = tk.getImage(url);
             this.mt.addImage(blocks[i], i);
+        }
+
+        for(int i = 0; i < 8; i++)
+        {
+            URL url = this.getClass().getResource("mino" + i + ".png");
+            minos[i] = tk.getImage(url);
+            this.mt.addImage(minos[i], i + 10);
         }
 
         try
@@ -44,15 +48,12 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         //--------------------------------------
 
         //----------------Panel-----------------
-        this.mp = new MyPanel(this, this.mm, blocks);
+        this.mp = new MyPanel(this, this.mm, blocks, minos);
         JPanel panel = new JPanel();
         panel.add(this.mp);
         super.getContentPane().add(panel);
         //--------------------------------------
 
-        //----------------timer-----------------
-        this.timer.start();
-        //--------------------------------------
     }
 
     //timerで呼ばれる部分
@@ -65,9 +66,9 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
             case 1:
                 if(!this.gm.getIsFall())
                 {
-                    this.gm.game();
+                    this.mm.game(0);
                 }
-                else if(this.timeBuff > 100)
+                else if(this.timeBuff > this.mm.getSpeed())
                 {
                     this.timeBuff = 0;
                     this.gm.fallMino();
@@ -85,36 +86,48 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         {
             case KeyEvent.VK_W:
                 this.mm.pushedW();
-                System.out.println("w");
                 break;
             case KeyEvent.VK_A:
                 this.mm.pushedA();
-                System.out.println("a");
                 break;
             case KeyEvent.VK_S:
                 this.mm.pushedS();
-                System.out.println("s");
                 break;
             case KeyEvent.VK_D:
                 this.mm.pushedD();
-                System.out.println("d");
                 break;
             case KeyEvent.VK_Q:
                 this.mm.pushedQ();
-                System.out.println("q");
                 break;
             case KeyEvent.VK_E:
                 this.mm.pushedE();
-                System.out.println("e");
+                break;
+            case KeyEvent.VK_P:
+                this.mm.pushedP();
+                break;
+            case KeyEvent.VK_F:
+                this.mm.pushedF();
+                break;
+            case KeyEvent.VK_ESCAPE:
+                System.exit(0);
                 break;
             case KeyEvent.VK_SPACE:
                 this.mm.pushedSpace();
-                System.out.println("space");
+                this.gameStart();
                 break;
         }
     }
     public void keyReleased(KeyEvent e){}
     //--------------------------------------------------
+
+    public void gameStart()
+    {
+        //----------------timer-----------------
+        this.timer.start();
+        //--------------------------------------
+        this.gm = this.mm.getGameManager();
+        this.mp.setGameManager(this.gm);
+    }
 
     public static void main(String[] args)
     {

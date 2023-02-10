@@ -239,5 +239,16 @@ public class GameManager
         this.reflectFeild();
         return buffHold;
     }
+
+    public boolean isGameOver()
+    {
+        int checkSum = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            checkSum = baseFeilds[3][i + 3];
+        }
+        if(checkSum == 0) return false;
+        else return true;
+    }
     //-------------------------------------------
 }

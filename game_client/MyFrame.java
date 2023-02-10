@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.*;
 import java.net.*;
 
 public class MyFrame extends JFrame implements ActionListener, KeyListener
@@ -11,14 +12,31 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
     private MediaTracker mt;
     private Timer timer;
     private int timeBuff;
+    private JPanel panel1;
+    private JTextField text;
+    private JButton button;
+    private MultiGame mg;
+    private boolean multiWait;
 
     public MyFrame()
     {
+        super();
         //----------------初期化----------------
         this.mt = new MediaTracker(this);
         this.mm = new MyModel();
         this.timer = new Timer(10, this);
         this.timeBuff = 0;
+        this.multiWait = false;
+        this.text = new JTextField(10);
+        this.button = new JButton("Enter");
+        this.button.addActionListener(this);
+        this.panel1 = new JPanel();
+        BoxLayout box1 = new BoxLayout(panel1, BoxLayout.X_AXIS);
+        this.panel1.setLayout(box1);
+        this.panel1.add(this.text);
+        this.panel1.add(this.button);
+        this.panel1.setEnabled(false);
+        this.panel1.setVisible(false);
         //--------------------------------------
 
         //----------------image-----------------
@@ -50,7 +68,10 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         //----------------Panel-----------------
         this.mp = new MyPanel(this, this.mm, blocks, minos);
         JPanel panel = new JPanel();
+        BoxLayout box = new BoxLayout(panel, BoxLayout.Y_AXIS);
+        panel.setLayout(box);
         panel.add(this.mp);
+        panel.add(this.panel1);
         super.getContentPane().add(panel);
         //--------------------------------------
 
@@ -59,6 +80,17 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
     //timerで呼ばれる部分
     public void actionPerformed(ActionEvent e)
     {
+        if(e.getSource() == this.button)
+        {
+            this.mm.setMultiGame(new MultiGame(this.text.getText()));
+            this.mg = this.mm.getMultiGame();
+            this.mm.multiInit();
+            this.gameStart();
+            this.mm.setSceneNum(22);
+            this.mg.runMultiClient();
+            this.panel1.setEnabled(false);
+            this.panel1.setVisible(false);
+        }
         this.timeBuff += 1;
         this.mp.repaint();
         switch(this.mm.getSceneNum())
@@ -66,15 +98,58 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
             case 1:
                 if(!this.gm.getIsFall())
                 {
-                    this.mm.game(0);
+                    if(this.gm.isGameOver())
+                    {
+                        this.mm.setSceneNum(3);
+                    }
+                    else
+                    {
+                        this.mm.game(0);
+                    }
                 }
                 else if(this.timeBuff > this.mm.getSpeed())
                 {
-                    this.timeBuff = 0;
                     this.gm.fallMino();
                 }
                 break;
-
+            case 22:
+                if(!this.gm.getIsFall())
+                {
+                    if(this.gm.isGameOver())
+                    {
+                        this.mm.setSceneNum(3);
+                    }
+                    else
+                    {
+                        this.mm.game(0);
+                    }
+                }
+                else if(this.timeBuff > this.mm.getSpeed())
+                {
+                    this.gm.fallMino();
+                }
+                SendData sendData = new SendData();
+                sendData.feilds = this.gm.getFeilds();
+                sendData.hold = this.gm.getHold();
+                sendData.next = this.mm.getRandArray();
+                sendData.score = this.mm.getScore();
+                this.mg.dataSend(sendData);
+                this.mp.setSendData(this.mg.receiveData());
+                break;
+            case 23:
+                System.out.println(this.multiWait);
+                System.out.println(this.mg.getWait());
+                if(this.multiWait && this.mg.getWait())
+                {
+                    this.multiWait = false;
+                    this.gameStart();
+                    this.mm.setSceneNum(22);
+                }
+                break;
+        }
+        if(this.timeBuff > this.mm.getSpeed())
+        {
+            this.timeBuff = 0;
         }
     }
 
@@ -109,11 +184,26 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
                 this.mm.pushedF();
                 break;
             case KeyEvent.VK_ESCAPE:
+                if(this.mm.getSceneNum() == 22) this.mg.closeContact();
                 System.exit(0);
                 break;
             case KeyEvent.VK_SPACE:
                 this.mm.pushedSpace();
-                this.gameStart();
+                if(this.mm.getSceneNum() == 1)
+                {
+                    this.gameStart();
+                }
+                if(this.mm.getSceneNum() == 21)
+                {
+                    this.panel1.setEnabled(true);
+                    this.panel1.setVisible(true);
+                }
+                if(this.mm.getSceneNum() == 23)
+                {
+                    this.multiWait = true;
+                    this.mg = this.mm.getMultiGame();
+                    this.timer.start();
+                }
                 break;
         }
     }

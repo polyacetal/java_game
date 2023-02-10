@@ -8,7 +8,7 @@ public class MyModel
     /*
     sceneNum
     0:title, 1:singleGame, 2:pause, 3:result
-    20:multiSeting, 21:multiGame
+    20:multiSeting, 21:address, 22:multiGame, 23:multiWait
     */
     private int score;
     private int charPosition;
@@ -16,6 +16,7 @@ public class MyModel
     private int[] randArray;
     private int speed;
     private GameManager gm;
+    private MultiGame mg;
 
     public MyModel()
     {
@@ -50,6 +51,11 @@ public class MyModel
         this.sceneNum = sceneNum;
     }
 
+    public void setMultiGame(MultiGame mg)
+    {
+        this.mg = mg;
+    }
+
     public void addScore(int score)
     {
         this.score += score;
@@ -73,6 +79,11 @@ public class MyModel
     public int getSpeed()
     {
         return this.speed;
+    }
+
+    public MultiGame getMultiGame()
+    {
+        return this.mg;
     }
 
     public void game(int n)
@@ -103,6 +114,12 @@ public class MyModel
             case 2:
                 this.charPosition = 0;
                 break;
+            case 20:
+                this.charPosition = 0;
+                break;
+            case 22:
+                this.gm.hardDrop();
+                break;
         }
     }
 
@@ -111,6 +128,9 @@ public class MyModel
         switch(this.sceneNum)
         {
             case 1:
+                this.gm.moveLeft();
+                break;
+            case 22:
                 this.gm.moveLeft();
                 break;
         }
@@ -129,6 +149,12 @@ public class MyModel
             case 2:
                 this.charPosition = 1;
                 break;
+            case 20:
+                this.charPosition = 1;
+                break;
+            case 22:
+                this.gm.fallMino();
+                break;
         }
     }
 
@@ -137,6 +163,9 @@ public class MyModel
         switch(this.sceneNum)
         {
             case 1:
+                this.gm.moveRight();
+                break;
+            case 22:
                 this.gm.moveRight();
                 break;
         }
@@ -149,6 +178,9 @@ public class MyModel
             case 1:
                 this.gm.lRotateMino();
                 break;
+            case 22:
+                this.gm.lRotateMino();
+                break;
         }
     }
 
@@ -157,6 +189,9 @@ public class MyModel
         switch(this.sceneNum)
         {
             case 1:
+                this.gm.rRotateMino();
+                break;
+            case 22:
                 this.gm.rRotateMino();
                 break;
         }
@@ -207,6 +242,7 @@ public class MyModel
                 if(this.charPosition == 1)
                 {
                     this.sceneNum = 20;
+                    this.charPosition = 0;
                 }
                 break;
             case 1:
@@ -223,8 +259,32 @@ public class MyModel
                     this.charPosition = 0;
                 }
                 break;
+            case 20:
+                if(this.charPosition == 0)
+                {
+                    this.mg = new MultiGame("localhost");
+                    this.sceneNum = 23;
+                }
+                if(this.charPosition == 1)
+                {
+                    this.sceneNum = 21;
+                }
+                break;
+            case 22:
+                break;
+            case 23:
+                break;
 
         }
+    }
+
+    public void multiInit()
+    {
+        this.gm = new GameManager(this);
+        this.score = 0;
+        this.game(0);
+        this.charPosition = 0;
+        this.sceneNum = 22;
     }
     //--------------------------------------------
 }

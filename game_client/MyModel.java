@@ -223,6 +223,13 @@ public class MyModel
                     this.game(n);
                 }
                 break;
+            case 22:
+                if(!this.gm.getIsHold())
+                {
+                    int n = this.gm.sendHold();
+                    this.game(n);
+                }
+                break;
         }
     }
 

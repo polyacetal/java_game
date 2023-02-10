@@ -17,6 +17,7 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
     private JButton button;
     private MultiGame mg;
     private boolean multiWait;
+    private SendData sendData;
 
     public MyFrame()
     {
@@ -26,6 +27,7 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         this.mm = new MyModel();
         this.timer = new Timer(10, this);
         this.timeBuff = 0;
+        this.sendData = new SendData();
         this.multiWait = false;
         this.text = new JTextField(10);
         this.button = new JButton("Enter");
@@ -84,12 +86,13 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         {
             this.mm.setMultiGame(new MultiGame(this.text.getText()));
             this.mg = this.mm.getMultiGame();
+            this.mg.runMultiClient();
             this.mm.multiInit();
             this.gameStart();
             this.mm.setSceneNum(22);
-            this.mg.runMultiClient();
             this.panel1.setEnabled(false);
             this.panel1.setVisible(false);
+            this.requestFocus();
         }
         this.timeBuff += 1;
         this.mp.repaint();
@@ -127,21 +130,19 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
                 else if(this.timeBuff > this.mm.getSpeed())
                 {
                     this.gm.fallMino();
+                    this.sendData.feilds = this.gm.getFeilds();
+                    this.sendData.hold = this.gm.getHold();
+                    this.sendData.next = this.mm.getRandArray();
+                    this.sendData.score = this.mm.getScore();
+                    this.mg.dataSend(this.sendData);
+                    this.mp.setSendData(this.mg.receiveData());
                 }
-                SendData sendData = new SendData();
-                sendData.feilds = this.gm.getFeilds();
-                sendData.hold = this.gm.getHold();
-                sendData.next = this.mm.getRandArray();
-                sendData.score = this.mm.getScore();
-                this.mg.dataSend(sendData);
-                this.mp.setSendData(this.mg.receiveData());
                 break;
             case 23:
-                System.out.println(this.multiWait);
-                System.out.println(this.mg.getWait());
                 if(this.multiWait && this.mg.getWait())
                 {
                     this.multiWait = false;
+                    this.mm.multiInit();
                     this.gameStart();
                     this.mm.setSceneNum(22);
                 }
@@ -202,6 +203,7 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
                 {
                     this.multiWait = true;
                     this.mg = this.mm.getMultiGame();
+                    this.mg.runMultiHost();
                     this.timer.start();
                 }
                 break;

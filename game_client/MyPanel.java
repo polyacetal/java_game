@@ -203,53 +203,57 @@ public class MyPanel extends JPanel
 
     public void drawMultiGame(Graphics g)   //22
     {
-        //-------------------初期化----------------------
-        g.setColor(new Color(255,255,255));
-        g.fillRect(0, 0, this.mm.WIDTH, this.mm.HEIGHT);
-        g.setColor(new Color(0,0,0));
-        int[] randArray = this.mm.getRandArray();
-        Font f = new Font("SanSerif", Font.PLAIN, 20);
-        g.setFont(f);
-        //-----------------------------------------------
+        try{
+            //-------------------初期化----------------------
+            g.setColor(new Color(255,255,255));
+            g.fillRect(0, 0, this.mm.WIDTH, this.mm.HEIGHT);
+            g.setColor(new Color(0,0,0));
+            int[] randArray = this.mm.getRandArray();
+            Font f = new Font("SanSerif", Font.PLAIN, 20);
+            g.setFont(f);
+            //-----------------------------------------------
 
-        //-----------------------------1PGameFeild---------------------------
-        int[][] feilds = this.gm.getFeilds();
-        for(int y = 2; y < 22; y++)
-        {
-            for(int x = 0; x < 10; x++)
+            //-----------------------------1PGameFeild---------------------------
+            int[][] feilds = this.gm.getFeilds();
+            for(int y = 2; y < 22; y++)
             {
-                g.drawImage(this.blocks[feilds[y][x]], (x * 20) + 100 , (y * 20) - 20 , this);
+                for(int x = 0; x < 10; x++)
+                {
+                    g.drawImage(this.blocks[feilds[y][x]], (x * 20) + 100 , (y * 20) - 20 , this);
+                }
             }
-        }
-        g.drawString("HOLD", 40, 40);
-        g.drawImage(this.minos[this.gm.getHold()], 42, 50, this);
-        g.drawString("NEXT", 310, 40);
-        for(int i = 0; i < 4; i++)
-        {
-            g.drawImage(this.minos[randArray[i]], 310, 60 * i + 50, this);
-        }
-        String score = "score :" + this.mm.getScore();
-        g.drawString(score, 310, 418);
-        //-------------------------------------------------------------------------
-        //-----------------------------2PGameFeild---------------------------
-        int[][] feilds2P = this.sd.feilds;
-        for(int y = 2; y < 22; y++)
-        {
-            for(int x = 0; x < 10; x++)
+            g.drawString("HOLD", 40, 40);
+            g.drawImage(this.minos[this.gm.getHold()], 42, 50, this);
+            g.drawString("NEXT", 310, 40);
+            for(int i = 0; i < 4; i++)
             {
-                g.drawImage(this.blocks[feilds2P[y][x]], (x * 20) + 600 , (y * 20) - 20 , this);
+                g.drawImage(this.minos[randArray[i]], 310, 60 * i + 50, this);
             }
+            String score = "score :" + this.mm.getScore();
+            g.drawString(score, 310, 418);
+            //-------------------------------------------------------------------------
+            //-----------------------------2PGameFeild---------------------------
+            int[][] feilds2P = this.sd.feilds;
+            for(int y = 2; y < 22; y++)
+            {
+                for(int x = 0; x < 10; x++)
+                {
+                    g.drawImage(this.blocks[feilds2P[y][x]], (x * 20) + 600 , (y * 20) - 20 , this);
+                }
+            }
+            g.drawString("HOLD", 540, 40);
+            g.drawImage(this.minos[this.sd.hold], 542, 50, this);
+            g.drawString("NEXT", 810, 40);
+            for(int i = 0; i < 4; i++)
+            {
+                g.drawImage(this.minos[this.sd.next[i]], 810, 60 * i + 50, this);
+            }
+            String score2P = "score :" + this.sd.score;
+            g.drawString(score2P, 810, 418);
+            //-------------------------------------------------------------------
         }
-        g.drawString("HOLD", 540, 40);
-        g.drawImage(this.minos[this.sd.hold], 542, 50, this);
-        g.drawString("NEXT", 810, 40);
-        for(int i = 0; i < 4; i++)
-        {
-            g.drawImage(this.minos[this.sd.next[i]], 810, 60 * i + 50, this);
-        }
-        String score2P = "score :" + this.sd.score;
-        g.drawString(score, 810, 418);
-        //-------------------------------------------------------------------
+        catch(Exception e)
+        {}
         this.repaint();
     }
 

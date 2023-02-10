@@ -6,8 +6,6 @@ public class MultiGame
     private int port;
     private String address;
     private Socket sc;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
     private boolean wait;
 
     public MultiGame(String address)
@@ -27,8 +25,6 @@ public class MultiGame
 
             this.sc = sSocket.accept();
             this.wait = true;
-            this.out = new ObjectOutputStream(this.sc.getOutputStream());
-            this.in = new ObjectInputStream(this.sc.getInputStream());
         }
         catch(Exception e)
         {
@@ -38,31 +34,19 @@ public class MultiGame
 
     public void runMultiClient()
     {
-        this.wait = false;
         try
         {
             this.sc = new Socket(this.address, this.port);
-            this.out = new ObjectOutputStream(this.sc.getOutputStream());
-            this.in = new ObjectInputStream(this.sc.getInputStream());
         }
         catch(Exception e)
         {
 
         }
-        this.wait = true;
     }
     public void closeContact()
     {
         try
         {
-            if(this.in != null)
-            {
-                this.in.close();
-            }
-            if(this.out != null)
-            { 
-                this.out.close();
-            }
             if(this.sc != null)
             {
                 this.sc.close();
@@ -83,10 +67,12 @@ public class MultiGame
     {
         try
         {
-            this.out.writeObject(sd);
+            ObjectOutputStream out = new ObjectOutputStream(this.sc.getOutputStream());
+            out.writeObject(sd);
         }
         catch(Exception e)
-        {}
+        {
+        }
     }
 
     public SendData receiveData()
@@ -94,10 +80,12 @@ public class MultiGame
         SendData sendData = new SendData();
         try
         {
-            sendData = (SendData)this.in.readObject();
+            ObjectInputStream in = new ObjectInputStream(this.sc.getInputStream());
+            sendData = (SendData)in.readObject();
         }
         catch(Exception e)
-        {}
+        {
+        }
         return sendData;
     }
 }

@@ -29,7 +29,7 @@ public class MyFrame extends JFrame implements ActionListener, KeyListener
         this.timeBuff = 0;
         this.sendData = new SendData();
         this.multiWait = false;
-        this.text = new JTextField(10);
+        this.text = new JTextField(50);
         this.button = new JButton("Enter");
         this.button.addActionListener(this);
         this.panel1 = new JPanel();

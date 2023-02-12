@@ -269,7 +269,7 @@ public class MyModel
             case 20:
                 if(this.charPosition == 0)
                 {
-                    this.mg = new MultiGame("localhost");
+                    this.mg = new MultiGame("0.0.0.0");
                     this.sceneNum = 23;
                 }
                 if(this.charPosition == 1)
